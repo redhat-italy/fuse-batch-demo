@@ -16,6 +16,7 @@
 package com.redhat.integration;
 
 import org.apache.camel.ShutdownRunningTask;
+import org.apache.camel.ValidationException;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.servlet.CamelHttpTransportServlet;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
@@ -54,12 +55,18 @@ public class Application extends SpringBootServletInitializer {
             //BindyCsvDataFormat bindy = new BindyCsvDataFormat(com.myapp.MyDatabaseModel.class);
             CsvDataFormat csv = new CsvDataFormat();
 
-            from("timer://simpleTimer?repeatCount=1").
-                to("sql:select * from orders order by product")
+            from("timer://simpleTimer?repeatCount=1")
+                .setBody(simple("EMPTY"))
+                .to("sql:select * from orders order by product")
                     .marshal(csv)
                     .to("file:export?fileName=${date:now:yyyyMMdd-HH_mm_ss}-exprot.csv")
             .log("--->  ${body}").end()
             .setHeader("CamelHttpMethod",simple("POST")).to("http://localhost:8081/shutdown");
+
+
+            onException(ValidationException.class)
+                .to("file:export?fileName=${date:now:yyyyMMdd-HH_mm_ss}-exprot.csv");
+
             // @formatter:on
         }
     }
