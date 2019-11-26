@@ -16,6 +16,7 @@ public class FileListController {
 
     private static final String DESTINATION_PATH = "DESTINATION_PATH";
 
+    @CrossOrigin
     @RequestMapping(
             value = "/messagelist",
             method = RequestMethod.GET,
@@ -47,6 +48,7 @@ public class FileListController {
     }
 
 
+    @CrossOrigin
     @RequestMapping(
             value = "/filecontent/{filename}",
             method = RequestMethod.GET,

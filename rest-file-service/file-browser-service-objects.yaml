@@ -32,7 +32,7 @@ spec:
       containers:
       - env:
         - name: DESTINATION_PATH
-          value: /job/storage
+          value: /job/storage/export
         image: docker-registry.default.svc:5000/demo-batch-fuse/file-browser-service
         imagePullPolicy: Always
         name: file-browser-service

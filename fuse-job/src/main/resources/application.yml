@@ -2,11 +2,11 @@ camel:
   springboot:
     # The Camel context name
     name: CamelRestSql
-  component:
-    servlet:
-      mapping:
-        enabled: true
-        context-path: /product-service/*
+#  component:
+#    servlet:
+#      mapping:
+#        enabled: true
+#        context-path: /product-service/*
 
 # Binding health checks to a different port
 management:
@@ -17,7 +17,10 @@ endpoints:
   enabled: false
   health:
     enabled: true
-
+  shutdown:
+    sensitive: false
+    enabled: true
+    
 mysql:
   service:
     # The name of the service hosting the MySQL database server,
