@@ -15,4 +15,8 @@
         </route>
     </camelContext>
     -->
+
+    <camelContext xmlns="http://camel.apache.org/schema/spring">
+        <propertyPlaceholder id="properties" location="classpath:job.properties"/>
+    </camelContext>
 </beans>

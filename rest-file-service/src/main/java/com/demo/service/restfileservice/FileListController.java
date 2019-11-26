@@ -76,7 +76,7 @@ public class FileListController {
         return content;
     }
 
-    public List<String> getFileList() {
+    private List<String> getFileList() {
         String destinationPath = System.getenv(DESTINATION_PATH);
         System.out.println(">>> Reading from " + destinationPath);
         List<String> results = new ArrayList<String>();
