@@ -1,0 +1,118 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: file-browser-service
+  name: file-browser-service
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    app: file-browser-service
+    deploymentconfig: file-browser-service
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+      creationTimestamp: null
+      labels:
+        app: file-browser-service
+        deploymentconfig: file-browser-service
+    spec:
+      containers:
+      - env:
+        - name: DESTINATION_PATH
+          value: /job/storage
+        image: docker-registry.default.svc:5000/demo-batch-fuse/file-browser-service
+        imagePullPolicy: Always
+        name: file-browser-service
+        ports:
+        - containerPort: 8443
+          protocol: TCP
+        - containerPort: 8778
+          protocol: TCP
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /job/storage
+          name: job-storage
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: job-storage
+        persistentVolumeClaim:
+          claimName: job-storage
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - file-browser-service
+      from:
+        kind: ImageStreamTag
+        name: file-browser-service:latest
+        namespace: demo-batch-fuse
+    type: ImageChange
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: file-browser-service
+  name: file-browser-service
+spec:
+  clusterIP: 172.30.15.225
+  ports:
+  - name: 8080-tcp
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  - name: 8443-tcp
+    port: 8443
+    protocol: TCP
+    targetPort: 8443
+  - name: 8778-tcp
+    port: 8778
+    protocol: TCP
+    targetPort: 8778
+  selector:
+    app: file-browser-service
+    deploymentconfig: file-browser-service
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: file-browser-service
+  name: file-browser-service
+spec:
+  port:
+    targetPort: 8080-tcp
+  to:
+    kind: Service
+    name: file-browser-service
+    weight: 100
+  wildcardPolicy: None
+
