@@ -31,7 +31,7 @@ objects:
           - mountPath: /job/storage
             name: volume-i7sso
           name: fuse-batch-job
-          image: docker-registry.default.svc:5000/demo-batch-fuse/fuse-batch
+          image: docker-registry.default.svc:5000/demo-batch-fuse/fuse-batch:latest
         volumes:
         - name: volume-i7sso
           persistentVolumeClaim:
