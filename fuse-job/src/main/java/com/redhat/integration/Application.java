@@ -52,16 +52,12 @@ public class Application extends SpringBootServletInitializer {
 
         @Override
         public void configure() {
-
-            //BindyCsvDataFormat bindy = new BindyCsvDataFormat(com.myapp.MyDatabaseModel.class);
-
-            //PropertiesComponent prop = getContext().getComponent(
-            //        "properties", PropertiesComponent.class);
-            //prop.setLocation("classpath:job.properties");
-
+            
             // @formatter:off
-            onException(ValidationException.class)
-                .to("file:export?fileName=${date:now:yyyyMMdd-HH_mm_ss}-export.csv");
+            onException(Exception.class)
+                    .to("file:{{destination.path}}export?fileName=${date:now:yyyyMMdd-HH_mm_ss}-error.csv")
+                    .log("--->  ${body}").end()
+                    .setHeader("CamelHttpMethod",simple("POST")).to("http://localhost:8081/shutdown");
             
             CsvDataFormat csv = new CsvDataFormat();
 

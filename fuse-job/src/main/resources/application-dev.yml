@@ -24,7 +24,7 @@ endpoints:
 spring:
   # Spring JDBC configuration
   datasource:
-    url:      jdbc:mysql://192.100.30.100:3306/test
+    url:      jdbc:mysql://192.100.30.100:3308/test
     username: fuse
     password: fuse
 

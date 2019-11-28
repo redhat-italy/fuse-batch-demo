@@ -27,7 +27,7 @@ oc delete bc/fuse-batch dc/fuse-batch svc/fuse-batch
 ```
 
 ```
-oc new-build --image-stream=openshift/fuse7-java-openshift:1.4 --name=fuse-batch --binary=true
+oc new-build --image-stream=openshift/fuse7-java-openshift:1.3 --name=fuse-batch --binary=true
 oc start-build fuse-batch --from-file=target/fuse-batch-1.0.jar
 ```
 

@@ -23,13 +23,23 @@ public class FileListController {
             headers = "Accept=application/json"
     )
     public String getMessageList() throws Exception {
-        List<String> fileList = getFileList();
-        StringBuffer sb = new StringBuffer();
-        String response = getListAsJson(fileList, sb);
+        String response = getListAsJson(getFileList("export"));
         return response;
     }
 
-    private String getListAsJson(List<String> fileList, StringBuffer sb) {
+    @CrossOrigin
+    @RequestMapping(
+            value = "/errorlist",
+            method = RequestMethod.GET,
+            headers = "Accept=application/json"
+    )
+    public String getErrorList() throws Exception {
+        String response = getListAsJson(getFileList("error"));
+        return response;
+    }
+
+    private String getListAsJson(List<String> fileList) {
+        StringBuffer sb = new StringBuffer();
         sb.append("{\"workedfile\":[");
         if (fileList.size() > 0) {
 
@@ -52,18 +62,46 @@ public class FileListController {
     @RequestMapping(
             value = "/filecontent/{filename}",
             method = RequestMethod.GET,
-            headers = "Accept=application/json"
+            headers = "Accept=application/json",
+            produces = "plain/text"
     )
     public String readFile(@PathVariable String filename) {
         String destinationPath = System.getenv(DESTINATION_PATH);
-
         String content = getFileContent(destinationPath + File.separator + filename).trim();
 
-
-        return "{\"content\":\"" + content + "\"}";
-
+        //return "{\"content\":\"" + content + "\"}";
+        return content;
     }
 
+    private List<String> getFileList() {
+        return this.getFileList("");
+    }
+
+    private List<String> getFileList(String namePattern) {
+        String destinationPath = System.getenv(DESTINATION_PATH);
+        System.out.println(">>> Reading from " + destinationPath);
+        List<String> results = new ArrayList<String>();
+
+        File[] files = new File(destinationPath).listFiles();
+
+        for (File file : files) {
+            System.out.println(">>> " + file.getName());
+
+
+            //if (file.isFile()) {
+            //if (file.getName().startsWith("MSG")) {
+            int namePatternIndex = file.getName().toLowerCase().indexOf(namePattern);
+
+            int patternLength = namePattern.trim().length();
+
+            if (patternLength > 0 && namePatternIndex >= 0) {
+                results.add(file.getName());
+            } 
+            //}
+            //}
+        }
+        return results;
+    }
 
     private static String getFileContent(String filePath) {
         String content = "";
@@ -76,23 +114,5 @@ public class FileListController {
         }
 
         return content;
-    }
-
-    private List<String> getFileList() {
-        String destinationPath = System.getenv(DESTINATION_PATH);
-        System.out.println(">>> Reading from " + destinationPath);
-        List<String> results = new ArrayList<String>();
-
-        File[] files = new File(destinationPath).listFiles();
-
-        for (File file : files) {
-            System.out.println(">>> " + file.getName());
-            //if (file.isFile()) {
-            //if (file.getName().startsWith("MSG")) {
-            results.add(file.getName());
-            //}
-            //}
-        }
-        return results;
     }
 }
