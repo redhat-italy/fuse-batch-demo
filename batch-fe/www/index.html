@@ -8,7 +8,7 @@
   <meta index="author" content="">
   <link rel="icon" href="../../../../favicon.ico">
 
-  <title>Product catalog AcmeFoo Store</title>
+  <title>Job execution overview</title>
 
   <!-- Bootstrap core CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -52,7 +52,7 @@
             fill="white" stroke-width="0.2">
             <path d="M0 0v8h7v-4h-4v-4h-3zm4 0v3h3l-3-3zm-3 2h1v1h-1v-1zm0 2h1v1h-1v-1zm0 2h4v1h-4v-1z" />
           </svg>
-          <strong>Catalog</strong>
+          <strong>Batch jobs</strong>
         </a>
       </div>
     </div>
@@ -63,7 +63,7 @@
     <!--div class="card mt-2 mb-2 ml-2 mr-2"-->
     <div class="card m-4">
       <div class="card-body text-center">
-          <h1>List of worked jobs</h1>
+        <h1>List executed jobs</h1>
       </div>
     </div>
 
@@ -73,22 +73,42 @@
         <p class="lead text-muted">The list of outcome of worked jobs</p>
       </div>
     </section-->
-
-    <div class="card mx-4">
-      <div class="card-body">
-        <div id="jobresultlist" class="list-group">
+    <ul class="nav nav-pills mx-4 py-2" id="pills-tab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="job-successful-tab" data-toggle="pill" href="#job-successful" role="tab"
+          aria-controls="job-successful" aria-selected="true">Successful</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="job-error-tab" data-toggle="pill" href="#job-error" role="tab" aria-controls="job-error"
+          aria-selected="false">Error</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="jobs-tabContent">
+      <div id="job-successful" class="tab-pane fade show active py-2" style="height: 400px; overflow-y:scroll;"
+        role="tabpanel" aria-labelledby="job-successful-tab">
+        <div id="jobresultlist" class="list-group px-4">
         </div>
       </div>
-    </div>
+      <div id="job-error" class="tab-pane fade" role="tabpanel" style="height: 400px; overflow-y:scroll;"
+        aria-labelledby="job-error-tab">
+        <div id="jobresultlisterror" class="list-group px-4">
+        </div>
+      </div>
+
+
+
 
   </main>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script>
+    //var urlRemoteRest = "file-browser-service-demo-batch-fuse.apps.nodisk.space";
+    var urlRemoteRest = "file-browser-service-demo-batch-fuse.apps.rhpds3x.openshift.opentlc.com";
+
     function highlight(selector) {
       console.log("current " + selector);
 
-      urlContent = "http://file-browser-service-demo-batch-fuse.apps.nodisk.space/filecontent/" + selector;
+      urlContent = "http://" + urlRemoteRest + "/filecontent/" + selector;
 
       console.log(urlContent);
 
@@ -105,42 +125,29 @@
         }
       });
 
-      /*
-      var jqxhr = $.get(, "text/plain", function (data) {
-        console.log("-> success" + data);
-        $('#modalTextContent').html(data);
-      })
-        .done(function (data) {
-          console.log("-> second success");
-        }
-        .fail(function (jqXHR, textStatus, errorThrown) {
-          $('#modalTextContent').html("Error loading content");
-          console.log("-> error " + textStatus);
-          console.log("-> incoming Text " + jqXHR.responseText);
-        })/*
-        .always(function (data) {
-          console.log("-> complete");
-        });*/
-
-
       $('#exampleModal').modal('show');
 
-
-
-
     }
-    $(document).ready(function () {
+
+    function addItemsToList(selector, url, componet, label) {
       var idItem = 1;
-      $.getJSON("http://file-browser-service-demo-batch-fuse.apps.nodisk.space/messagelist", function (data) {
+      $.getJSON(url, function (data) {
         var items = [];
         $.each(data.workedfile, function (index, currentItem) {
           //alert(key+"="+currentItem);
           console.log(index + "=" + currentItem.name);
-          var item = $("#jobresultlist").append('<button type="button" id="' + idItem + '-filename" class="list-group-item list-group-item-action mx-2" onclick="highlight(\'' + currentItem.name + '\')">' + currentItem.name + '</button>');
+          var item = $("#" + selector).append('<button type="button" id="' + idItem + '-filename" class="list-group-item list-group-item-action mx-2" onclick="highlight(\'' + currentItem.name + '\')">' + currentItem.name + '</button>');
           idItem++;
-        });
-      });
 
+        });
+        componet.html(label + "(" + (idItem - 1) + ")");
+      });
+    }
+
+    $(document).ready(function () {
+      items = addItemsToList("jobresultlist", "http://" + urlRemoteRest + "/messagelist", $('#job-successful-tab'), "Successful");
+
+      items = addItemsToList("jobresultlisterror", "http://" + urlRemoteRest + "/errorlist", $('#job-error-tab'), "Error");
 
     });
   </script>

@@ -10,3 +10,7 @@ oc new-app batch-fe
 ```
 oc expose svc/batch-fe
 ```
+
+# Volumes
+
+Add the volume to the Deployment of application
