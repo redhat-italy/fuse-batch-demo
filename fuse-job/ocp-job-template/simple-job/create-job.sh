@@ -1,0 +1,2 @@
+oc delete job fuse-batch-job
+oc process -f fuse-batch-job-template.yaml -p JOB_SUFFIX=1 -p MYSQL_SERVICE_NAME=mysql -p MYSQL_SERVICE_USERNAME=mysql -p MYSQL_SERVICE_PASSWORD=mysql -p MYSQL_SERVICE_DATABASE=integrationdb -o yaml --local=true -n demo-batch-fuse|oc -n demo-batch-fuse create -f -
