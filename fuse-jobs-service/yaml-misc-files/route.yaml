@@ -1,0 +1,15 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: fuse-jobs-service
+  name: fuse-jobs-service
+spec:
+  host: fuse-jobs-service-demo-batch-fuse.apps.rhpds3x.openshift.opentlc.com
+  port:
+    targetPort: 8080-tcp
+  to:
+    kind: Service
+    name: fuse-jobs-service
+    weight: 100
+  wildcardPolicy: None

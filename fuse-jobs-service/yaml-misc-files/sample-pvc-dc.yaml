@@ -1,0 +1,109 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  annotations:
+    openshift.io/generated-by: OpenShiftNewApp
+  creationTimestamp: 2019-11-19T16:20:42Z
+  generation: 3
+  labels:
+    app: fuse-batch
+  name: fuse-batch
+  namespace: demo-batch-fuse
+  resourceVersion: "1193468"
+  selfLink: /apis/apps.openshift.io/v1/namespaces/demo-batch-fuse/deploymentconfigs/fuse-batch
+  uid: 883d11e6-0ae8-11ea-a9d0-005056b8ef67
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    app: fuse-batch
+    deploymentconfig: fuse-batch
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+      creationTimestamp: null
+      labels:
+        app: fuse-batch
+        deploymentconfig: fuse-batch
+    spec:
+      containers:
+      - env:
+        - name: MYSQL_SERVICE_DATABASE
+          value: integrationdb
+        - name: MYSQL_SERVICE_NAME
+          value: mysql
+        - name: MYSQL_SERVICE_PASSWORD
+          value: mysql
+        - name: MYSQL_SERVICE_USERNAME
+          value: mysql
+        image: docker-registry.default.svc:5000/demo-batch-fuse/fuse-batch@sha256:295a6dfb2ecf0bade08f5f8aa5b0ff7f831fe2a86c1e73ae85309e6b7b7ab6a0
+        imagePullPolicy: Always
+        name: fuse-batch
+        ports:
+        - containerPort: 9779
+          protocol: TCP
+        - containerPort: 8778
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /job/storage
+          name: volume-i7sso
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: volume-i7sso
+        persistentVolumeClaim:
+          claimName: job-storage
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - fuse-batch
+      from:
+        kind: ImageStreamTag
+        name: fuse-batch:latest
+        namespace: demo-batch-fuse
+      lastTriggeredImage: docker-registry.default.svc:5000/demo-batch-fuse/fuse-batch@sha256:295a6dfb2ecf0bade08f5f8aa5b0ff7f831fe2a86c1e73ae85309e6b7b7ab6a0
+    type: ImageChange
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: 2019-11-19T16:21:05Z
+    lastUpdateTime: 2019-11-19T16:21:05Z
+    message: Deployment config has minimum availability.
+    status: "True"
+    type: Available
+  - lastTransitionTime: 2019-11-22T18:20:37Z
+    lastUpdateTime: 2019-11-22T18:20:40Z
+    message: replication controller "fuse-batch-2" successfully rolled out
+    reason: NewReplicationControllerAvailable
+    status: "True"
+    type: Progressing
+  details:
+    causes:
+    - type: ConfigChange
+    message: config change
+  latestVersion: 2
+  observedGeneration: 3
+  readyReplicas: 1
+  replicas: 1
+  unavailableReplicas: 0
+  updatedReplicas: 1
